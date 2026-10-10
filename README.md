@@ -56,8 +56,6 @@ asciidocLocalPath=/Users/you/Library/Application Support/JetBrains/IntelliJIdea2
 
 Set `pluginVersion` in `gradle.properties`, commit, and push a tag like `v0.1.0`. The `release` workflow checks the tag against `pluginVersion`, runs the tests, builds the plugin with `antora-preview.js` from the antora-ls release named by `antoraLsVersion`, and attaches `antora-intellij-<version>.zip` to a GitHub release. To ship changes to the preview server, release antora-ls first and raise `antoraLsVersion`.
 
-While antora-ls is private, the workflow needs a repository secret `ANTORA_LS_TOKEN`: a fine-grained personal access token with read access to the contents of antora-ls.
-
 The zip works on macOS, Windows and Linux. To distribute it:
 
 - **From disk:** **Settings | Plugins | ⚙ | Install Plugin from Disk…**, after installing the AsciiDoc plugin.
