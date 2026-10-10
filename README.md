@@ -79,3 +79,7 @@ IntelliJ plugin (Kotlin)                          antora-preview.js (Bun or Node
 - The server prints `ANTORA_PREVIEW <url> <token>` on stdout first, then `ANTORA_PREVIEW_STATUS <json>` lines for build progress and `ANTORA_PREVIEW_REVEAL <json>` lines for double-clicks. It exits when its stdin closes, so it stops with the IDE.
 - Unsaved text and caret lines go to `/__preview/update` and `/__preview/cursor` with the token, batched in 40 ms windows.
 - Everything Antora-specific lives in the shared script; the plugin knows nothing about Antora's content model.
+
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE). The bundled preview server comes from [antora-ls](https://github.com/moritosh/antora-ls), also Apache-2.0.

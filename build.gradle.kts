@@ -80,6 +80,8 @@ sourceSets.main {
     resources.srcDir(files(previewResources).builtBy(copyPreviewScript))
 }
 tasks.processResources {
+    // Apache-2.0: the plugin carries its license and notice.
+    into("META-INF") { from("LICENSE", "NOTICE") }
     val script = previewScript
     doFirst {
         check(script.get().isFile) {
