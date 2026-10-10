@@ -1,8 +1,8 @@
 antora-intellij
-Copyright 2026 Moritz
+Copyright 2026 Moritz Anders Hartmann
 
 This product is licensed under the Apache License, Version 2.0 (see LICENSE).
 
 It bundles antora-preview.js, the live preview server of antora-ls
-(https://github.com/moritosh/antora-ls), Copyright 2026 Moritz, also licensed
-under the Apache License, Version 2.0.
+(https://github.com/moritosh/antora-ls), Copyright 2026 Moritz Anders Hartmann,
+also licensed under the Apache License, Version 2.0.
