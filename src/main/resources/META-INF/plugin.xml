@@ -1,0 +1,54 @@
+<idea-plugin>
+  <id>com.moritosh.antora.preview</id>
+  <name>Antora Live Preview</name>
+  <vendor url="https://github.com/moritosh">moritosh</vendor>
+
+  <description><![CDATA[
+    <p>A live preview of <a href="https://antora.org">Antora</a> sites, built with the project's own Antora and
+    served like a dev server. It complements the AsciiDoc plugin.</p>
+    <ul>
+      <li>Opens at once and shows the build's progress; pages are rendered when first viewed, so large sites are ready in seconds.</li>
+      <li>Built from the working tree of local content sources, whatever branches the playbook names.</li>
+      <li>Unsaved edits show as you type, without a reload; the preview follows the cursor and the active page.</li>
+      <li>Double-click a block in the preview to jump to its source line.</li>
+      <li>Shown in a tool window, or in the system browser.</li>
+    </ul>
+    <p>Needs Bun or Node, and Antora installed in the project with npm, pnpm, Yarn or Bun.</p>
+  ]]></description>
+
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.jcef</depends>
+  <depends>org.asciidoctor.intellij.asciidoc</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <toolWindow id="Antora Preview" anchor="right" icon="AllIcons.Actions.Preview" canCloseContents="false"
+                factoryClass="com.moritosh.antora.preview.ui.AntoraPreviewToolWindowFactory"/>
+    <projectConfigurable parentId="tools" id="com.moritosh.antora.preview" displayName="Antora Live Preview"
+                         instance="com.moritosh.antora.preview.settings.AntoraPreviewConfigurable"/>
+    <notificationGroup id="Antora Preview" displayType="BALLOON"/>
+  </extensions>
+
+  <actions>
+    <action id="AntoraPreview.Open" class="com.moritosh.antora.preview.actions.OpenPreviewAction"
+            text="Open Antora Live Preview" description="Preview the site built with Antora, live as you edit"
+            icon="AllIcons.Actions.Preview">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+      <add-to-group group-id="AsciiDoc.TextFormatting" anchor="last"/>
+    </action>
+    <action id="AntoraPreview.OpenInBrowser" class="com.moritosh.antora.preview.actions.OpenPreviewInBrowserAction"
+            text="Open Antora Live Preview in Browser" description="Preview the site in the system browser, live as you edit"
+            icon="AllIcons.General.Web">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </action>
+    <action id="AntoraPreview.Stop" class="com.moritosh.antora.preview.actions.StopPreviewAction"
+            text="Stop Antora Live Preview" description="Stop the preview server" icon="AllIcons.Actions.Suspend">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </action>
+    <action id="AntoraPreview.FollowCursor" class="com.moritosh.antora.preview.actions.ToggleFollowCursorAction"
+            text="Follow Cursor" description="Scroll the preview to the block being edited, and switch to the active page"
+            icon="AllIcons.General.Locate"/>
+  </actions>
+</idea-plugin>
