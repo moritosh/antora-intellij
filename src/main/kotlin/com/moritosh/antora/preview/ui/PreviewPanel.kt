@@ -19,16 +19,22 @@ import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.ui.UIUtil
 import com.moritosh.antora.preview.AntoraPreviewListener
 import com.moritosh.antora.preview.AntoraPreviewService
+import com.moritosh.antora.preview.settings.AntoraPreviewSettings
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.handler.CefLifeSpanHandlerAdapter
 import org.cef.handler.CefRequestHandlerAdapter
 import org.cef.network.CefRequest
+import java.nio.charset.StandardCharsets.UTF_8
+import java.util.Base64
 
 /** The preview in an embedded browser, with a toolbar. */
-internal class PreviewPanel(private val project: Project, parent: Disposable) : SimpleToolWindowPanel(true, true) {
+internal class PreviewPanel(private val project: Project, private val parent: Disposable) : SimpleToolWindowPanel(true, true) {
     private val service = AntoraPreviewService.getInstance(project)
-    private val browser: JBCefBrowser? = if (JBCefApp.isSupported()) JBCefBrowser.createBuilder().build() else null
+    private val settings = AntoraPreviewSettings.getInstance(project)
+
+    /** Created for the first page shown; disposed while no preview runs unless the settings keep it. Used on the EDT. */
+    private var browser: JBCefBrowser? = null
 
     init {
         val actions = ActionManager.getInstance()
@@ -40,19 +46,28 @@ internal class PreviewPanel(private val project: Project, parent: Disposable) : 
         )
         toolbar = actions.createActionToolbar("AntoraPreview", group, true).also { it.targetComponent = this }.component
 
-        if (browser == null) {
-            setContent(JBPanelWithEmptyText().withEmptyText("The embedded browser isn't available; previews open in the system browser"))
-        } else {
-            Disposer.register(parent, browser)
-            setContent(browser.component)
-            keepLinksOutside(browser)
-        }
-
         project.messageBus.connect(parent).subscribe(AntoraPreviewListener.TOPIC, object : AntoraPreviewListener {
-            override fun showPage(url: String) = onEdt { browser?.loadURL(url) }
+            override fun showPage(url: String) = onEdt { show(url) }
             override fun stateChanged() = onEdt { if (!service.isRunning && service.pageUrl == null) showIdle() }
         })
-        service.pageUrl?.let { browser?.loadURL(it) } ?: showIdle()
+        service.pageUrl?.let(::show) ?: showIdle()
+    }
+
+    private fun show(url: String) {
+        (browser ?: createBrowser())?.loadURL(url)
+    }
+
+    private fun createBrowser(): JBCefBrowser? {
+        if (!JBCefApp.isSupported()) {
+            setContent(message(NO_BROWSER))
+            return null
+        }
+        return JBCefBrowser.createBuilder().build().also {
+            Disposer.register(parent, it)
+            keepLinksOutside(it)
+            setContent(it.component)
+            browser = it
+        }
     }
 
     /** Links that leave the preview, and ones that would open a new window, go to the system browser. */
@@ -75,14 +90,27 @@ internal class PreviewPanel(private val project: Project, parent: Disposable) : 
     }
 
     private fun showIdle() {
+        if (!JBCefApp.isSupported()) return setContent(message(NO_BROWSER))
+        if (!settings.keepBrowser) {
+            setContent(message("No preview is running.", "Run Open Antora Live Preview on a page to start one."))
+            browser?.let { browser = null; Disposer.dispose(it) }
+            return
+        }
+        val browser = browser ?: createBrowser() ?: return
         val fg = ColorUtil.toHtmlColor(UIUtil.getContextHelpForeground())
         val bg = ColorUtil.toHtmlColor(UIUtil.getPanelBackground())
-        browser?.loadHTML(
-            """<!doctype html><html><body style="margin:0;height:100vh;display:grid;place-items:center;
+        val html = """<!doctype html><html><body style="margin:0;height:100vh;display:grid;place-items:center;
               |background:$bg;color:$fg;font:13px system-ui,sans-serif;text-align:center">
               |<p>No preview is running.<br>Run <b>Open Antora Live Preview</b> on a page to start one.</p>
               |</body></html>""".trimMargin()
-        )
+        // A data: URL rather than loadHTML(), which serves the page from a file:///jbcefbrowser/<random> URL
+        // that keepLinksOutside would hand to the system browser.
+        browser.loadURL("data:text/html;base64," + Base64.getEncoder().encodeToString(html.toByteArray(UTF_8)))
+    }
+
+    private fun message(vararg lines: String) = JBPanelWithEmptyText().apply {
+        emptyText.text = lines.first()
+        lines.drop(1).forEach { emptyText.appendLine(it) }
     }
 
     private fun onEdt(action: () -> Unit) = ApplicationManager.getApplication().invokeLater({ action() }, project.disposed)
@@ -107,5 +135,9 @@ internal class PreviewPanel(private val project: Project, parent: Disposable) : 
             val url = browser?.cefBrowser?.url?.takeIf { it.startsWith("http") } ?: service.baseUrl ?: return
             BrowserUtil.browse(url)
         }
+    }
+
+    private companion object {
+        const val NO_BROWSER = "The embedded browser isn't available; previews open in the system browser"
     }
 }

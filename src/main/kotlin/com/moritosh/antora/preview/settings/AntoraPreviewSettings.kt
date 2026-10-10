@@ -25,6 +25,9 @@ class AntoraPreviewSettings : SimplePersistentStateComponent<AntoraPreviewSettin
         var packageManager by string()
 
         var followCursor by property(true)
+
+        /** Keep the tool window's embedded browser while no preview runs, rather than freeing it. */
+        var keepBrowser by property(true)
     }
 
     var runtimePath: String?
@@ -42,6 +45,10 @@ class AntoraPreviewSettings : SimplePersistentStateComponent<AntoraPreviewSettin
     var followCursor: Boolean
         get() = state.followCursor
         set(value) { state.followCursor = value }
+
+    var keepBrowser: Boolean
+        get() = state.keepBrowser
+        set(value) { state.keepBrowser = value }
 
     companion object {
         fun getInstance(project: Project): AntoraPreviewSettings = project.service()

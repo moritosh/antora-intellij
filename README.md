@@ -15,7 +15,7 @@ Run **Open Antora Live Preview** on a page, from the editor or project view cont
 - **Double-click** a block in the preview to jump to its source line.
 - **Log** tab: the server's and Antora's output.
 
-The preview uses the nearest playbook above the page: `antora-playbook.yml`, else another `*playbook*.yml`. There is one preview per project; opening a page from another playbook restarts it. The runtime, playbook and package manager can be set in **Settings | Tools | Antora Live Preview**.
+The preview uses the nearest playbook above the page: `antora-playbook.yml`, else another `*playbook*.yml`. There is one preview per project; opening a page from another playbook restarts it. The runtime, playbook and package manager can be set in **Settings | Tools | Antora Live Preview**, as can whether the tool window keeps its embedded browser while no preview runs (on by default); turning this off frees the browser's memory.
 
 ## Requirements
 
@@ -28,6 +28,7 @@ The preview uses the nearest playbook above the page: `antora-playbook.yml`, els
 - Pages render on demand, so search extensions such as Lunr only index titles, and extensions that post-process converted pages don't run.
 - Antora installed only globally isn't supported.
 - Remote Development and WSL aren't supported yet.
+- Installing or uninstalling the plugin doesn't need a restart, but the AsciiDoc editor toolbar only changes in editors opened afterwards: the AsciiDoc plugin builds it when the editor opens. Reopen a file to add or remove the preview button. The right-click menus and **Tools** are updated at once.
 
 ## Build
 

@@ -10,6 +10,7 @@ import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.listCellRenderer.textListCellRenderer
+import com.moritosh.antora.preview.AntoraPreviewListener
 import com.moritosh.antora.preview.AntoraPreviewService
 import com.moritosh.antora.preview.PackageManager
 
@@ -42,11 +43,17 @@ class AntoraPreviewConfigurable(private val project: Project) : BoundConfigurabl
             checkBox("Follow the cursor").bindSelected({ settings.followCursor }, { settings.followCursor = it })
                 .comment("Scroll the preview to the block being edited, and switch to the page in the active editor.")
         }
+        row {
+            checkBox("Keep the embedded browser when the preview stops").bindSelected({ settings.keepBrowser }, { settings.keepBrowser = it })
+                .comment("The next preview opens a moment sooner. Turn this off to free the browser's memory while no preview runs.")
+        }
     }
 
     override fun apply() {
         val before = settings.runtimePath to settings.playbookPath
+        val keepBrowser = settings.keepBrowser
         super.apply()
         if (before != settings.runtimePath to settings.playbookPath) AntoraPreviewService.getInstance(project).restart()
+        if (keepBrowser != settings.keepBrowser) project.messageBus.syncPublisher(AntoraPreviewListener.TOPIC).stateChanged()
     }
 }
