@@ -82,7 +82,7 @@ class PreviewLogicTest {
         executable("home/.nvm/versions/node/v20.9.1/bin/node")
         executable("home/.nvm/versions/node/v20.10.0/bin/node")
         executable("home/.nvm/versions/node/v20.10.0/bin/pnpm")
-        val locator = RuntimeLocator(emptyMap(), home, windows = false)
+        val locator = RuntimeLocator(emptyMap(), home, windows = false, systemDirs = emptyList())
         assertEquals(home.resolve(".nvm/versions/node/v20.10.0/bin/node"), locator.find(null))
         assertEquals(home.resolve(".nvm/versions/node/v20.10.0/bin/pnpm"), locator.tool("pnpm"))
     }

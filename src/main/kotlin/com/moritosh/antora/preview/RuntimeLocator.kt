@@ -16,6 +16,8 @@ class RuntimeLocator(
     private val env: Map<String, String>,
     private val home: Path?,
     private val windows: Boolean = System.getProperty("os.name").startsWith("Windows"),
+    /** Where Homebrew and Node's installer put node on macOS and Linux; tests leave them out. */
+    private val systemDirs: List<Path> = listOf(Path.of("/opt/homebrew/bin"), Path.of("/usr/local/bin")),
 ) {
     fun find(configured: String?): Path? {
         if (!configured.isNullOrBlank()) return Path.of(configured)
@@ -67,8 +69,7 @@ class RuntimeLocator(
             add(it.resolve(".asdf/shims"))
             add(it.resolve(".local/share/mise/shims"))
         }
-        add(Path.of("/opt/homebrew/bin"))
-        add(Path.of("/usr/local/bin"))
+        addAll(systemDirs)
     }
 
     private fun unixVersionDirs(): List<Pair<Path, String>> = home?.let {
