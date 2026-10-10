@@ -2,7 +2,7 @@
 
 A dev-server-style live preview of [Antora](https://antora.org) sites for IntelliJ IDEA and other JetBrains IDEs. It requires the [AsciiDoc plugin](https://plugins.jetbrains.com/plugin/7391-asciidoc).
 
-It runs the same preview server as [antora-ls](../antora-ls) for Zed: `antora-preview.js` builds the site with the project's own Antora and serves it from memory. The plugin starts the server, feeds it your edits and shows the result.
+It runs the same preview server as [antora-ls](https://github.com/moritosh/antora-ls) for Zed: `antora-preview.js` builds the site with the project's own Antora and serves it from memory. The plugin starts the server, feeds it your edits and shows the result.
 
 ## Use
 
