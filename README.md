@@ -6,6 +6,42 @@ It runs the same preview server as [antora-ls](https://github.com/moritosh/antor
 
 The script is bundled into the plugin from an antora-ls release, the one set by `antoraLsVersion` in `gradle.properties`; version 0.1.0 bundles antora-ls 0.2.2. The two projects are versioned independently, so a fix to the preview server reaches this plugin once `antoraLsVersion` is raised and the plugin is released.
 
+## Install
+
+The plugin isn't on JetBrains Marketplace yet; install it from the zip of the [latest release](https://github.com/moritosh/antora-intellij/releases/latest). It needs IntelliJ IDEA 2026.2 or later, or another JetBrains IDE of that version, with the AsciiDoc plugin.
+
+### macOS
+
+1. In IntelliJ IDEA, open **IntelliJ IDEA | Settings** (`⌘,`), go to **Plugins | Marketplace**, search for **AsciiDoc** and install it.
+2. Download `antora-intellij-<version>.zip` from the [latest release](https://github.com/moritosh/antora-intellij/releases/latest). Don't unpack it.
+3. In **Settings | Plugins**, click **⚙ | Install Plugin from Disk…** and choose the zip. No restart is needed.
+4. Install [Bun](https://bun.sh) (`curl -fsSL https://bun.sh/install | bash`) or Node (`brew install node`, or the installer from [nodejs.org](https://nodejs.org)). The plugin finds them even when IntelliJ is started from the Dock; see [Requirements](#requirements) for where it looks.
+5. Open your docs project, right-click a page in the editor or the project view, and choose **Open Antora Live Preview**.
+
+### Windows
+
+1. In IntelliJ IDEA, open **File | Settings** (`Ctrl+Alt+S`), go to **Plugins | Marketplace**, search for **AsciiDoc** and install it.
+2. Download `antora-intellij-<version>.zip` from the [latest release](https://github.com/moritosh/antora-intellij/releases/latest). Don't unpack it.
+3. In **Settings | Plugins**, click **⚙ | Install Plugin from Disk…** and choose the zip. No restart is needed.
+4. Install [Bun](https://bun.sh) (`powershell -c "irm bun.sh/install.ps1 | iex"`) or Node (`winget install OpenJS.NodeJS.LTS`, or the installer from [nodejs.org](https://nodejs.org)). The plugin also finds Node installed while IntelliJ is running, so there's no need to restart it.
+5. Open your docs project, right-click a page in the editor or the project view, and choose **Open Antora Live Preview**.
+
+### Linux
+
+1. In IntelliJ IDEA, open **File | Settings** (`Ctrl+Alt+S`), go to **Plugins | Marketplace**, search for **AsciiDoc** and install it.
+2. Download `antora-intellij-<version>.zip` from the [latest release](https://github.com/moritosh/antora-intellij/releases/latest). Don't unpack it.
+3. In **Settings | Plugins**, click **⚙ | Install Plugin from Disk…** and choose the zip. No restart is needed.
+4. Install [Bun](https://bun.sh) (`curl -fsSL https://bun.sh/install | bash`; it needs `unzip`) or Node (your distribution's `nodejs` package, or [nvm](https://github.com/nvm-sh/nvm) or fnm).
+5. Open your docs project, right-click a page in the editor or the project view, and choose **Open Antora Live Preview**. If the IDE's embedded browser isn't available, the preview opens in the system browser.
+
+### The docs project
+
+The preview builds the site with the project's own Antora 3. If the project's `package.json` lists Antora but it isn't installed yet, the plugin offers to install the dependencies with the project's package manager. If Antora isn't listed, add it first:
+
+```sh
+npm i -D antora    # or: pnpm add -D antora, yarn add -D antora, bun add -d antora
+```
+
 ## Use
 
 Run **Open Antora Live Preview** on a page, from the editor or project view context menu, the AsciiDoc editor toolbar, or **Tools**. The page opens in the **Antora Preview** tool window; **Open Antora Live Preview in Browser** opens it in the system browser.
