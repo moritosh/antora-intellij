@@ -4,6 +4,8 @@ A dev-server-style live preview of [Antora](https://antora.org) sites for Intell
 
 It runs the same preview server as [antora-ls](https://github.com/moritosh/antora-ls) for Zed: `antora-preview.js` builds the site with the project's own Antora and serves it from memory. The plugin starts the server, feeds it your edits and shows the result.
 
+The script is bundled into the plugin from an antora-ls release, the one set by `antoraLsVersion` in `gradle.properties`; version 0.1.0 bundles antora-ls 0.2.2. The two projects are versioned independently, so a fix to the preview server reaches this plugin once `antoraLsVersion` is raised and the plugin is released.
+
 ## Use
 
 Run **Open Antora Live Preview** on a page, from the editor or project view context menu, the AsciiDoc editor toolbar, or **Tools**. The page opens in the **Antora Preview** tool window; **Open Antora Live Preview in Browser** opens it in the system browser.
@@ -32,7 +34,7 @@ The preview uses the nearest playbook above the page: `antora-playbook.yml`, els
 
 ## Build
 
-The build bundles `antora-preview.js` from antora-ls, which must be checked out next to this repository (`antoraPreviewScript` in `gradle.properties`). Gradle needs JDK 21 or later, such as the runtime that ships with IntelliJ:
+The build bundles `antora-preview.js` from antora-ls, which must be checked out next to this repository (`antoraPreviewScript` in `gradle.properties`). Releases take it from the antora-ls release named by `antoraLsVersion`; to build the same locally, check out that tag in antora-ls (for example `git -C ../antora-ls checkout v0.2.2`). Gradle needs JDK 21 or later, such as the runtime that ships with IntelliJ:
 
 ```sh
 export JAVA_HOME="$HOME/Applications/IntelliJ IDEA.app/Contents/jbr/Contents/Home"
@@ -52,7 +54,11 @@ asciidocLocalPath=/Users/you/Library/Application Support/JetBrains/IntelliJIdea2
 
 ## Release
 
-Set `pluginVersion` in `gradle.properties` and run `./gradlew buildPlugin`. The zip works on macOS, Windows and Linux. To distribute it:
+Set `pluginVersion` in `gradle.properties`, commit, and push a tag like `v0.1.0`. The `release` workflow checks the tag against `pluginVersion`, runs the tests, builds the plugin with `antora-preview.js` from the antora-ls release named by `antoraLsVersion`, and attaches `antora-intellij-<version>.zip` to a GitHub release. To ship changes to the preview server, release antora-ls first and raise `antoraLsVersion`.
+
+While antora-ls is private, the workflow needs a repository secret `ANTORA_LS_TOKEN`: a fine-grained personal access token with read access to the contents of antora-ls.
+
+The zip works on macOS, Windows and Linux. To distribute it:
 
 - **From disk:** **Settings | Plugins | ⚙ | Install Plugin from Disk…**, after installing the AsciiDoc plugin.
 - **JetBrains Marketplace:** upload the first version by hand at [plugins.jetbrains.com](https://plugins.jetbrains.com/plugin/add). After that, `PUBLISH_TOKEN=… ./gradlew publishPlugin` publishes a new version. To [sign](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html) it, also set `CERTIFICATE_CHAIN`, `PRIVATE_KEY` and `PRIVATE_KEY_PASSWORD`. Marketplace offers to install the AsciiDoc plugin along with this one.

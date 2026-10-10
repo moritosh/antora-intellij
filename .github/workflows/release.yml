@@ -1,0 +1,38 @@
+# Push a tag like v0.1.0 to publish the plugin zip as a GitHub release.
+name: release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the tag against pluginVersion
+        id: versions
+        run: |
+          version=$(sed -n 's/^pluginVersion=//p' gradle.properties)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME doesn't match pluginVersion=$version in gradle.properties"
+            exit 1
+          fi
+          echo "antora-ls=v$(sed -n 's/^antoraLsVersion=//p' gradle.properties)" >> "$GITHUB_OUTPUT"
+      # The preview server, from the antora-ls release that gradle.properties names.
+      - uses: actions/checkout@v4
+        with:
+          repository: moritosh/antora-ls
+          ref: ${{ steps.versions.outputs.antora-ls }}
+          path: antora-ls
+          # While antora-ls is private, a token that can read it.
+          token: ${{ secrets.ANTORA_LS_TOKEN || github.token }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew test buildPlugin -PantoraPreviewScript=antora-ls/preview/antora-preview.js
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: build/distributions/antora-intellij-*.zip
