@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check the tag against pluginVersion
         id: versions
         run: |
@@ -20,17 +20,17 @@ jobs:
           fi
           echo "antora-ls=v$(sed -n 's/^antoraLsVersion=//p' gradle.properties)" >> "$GITHUB_OUTPUT"
       # The preview server, from the antora-ls release that gradle.properties names.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: moritosh/antora-ls
           ref: ${{ steps.versions.outputs.antora-ls }}
           path: antora-ls
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 21
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew test buildPlugin -PantoraPreviewScript=antora-ls/preview/antora-preview.js
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: build/distributions/antora-intellij-*.zip
