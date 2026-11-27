@@ -4,7 +4,7 @@ A dev-server-style live preview of [Antora](https://antora.org) sites for Intell
 
 It runs the same preview server as [antora-ls](https://github.com/moritosh/antora-ls) for Zed: `antora-preview.js` builds the site with the project's own Antora and serves it from memory. The plugin starts the server, feeds it your edits and shows the result.
 
-The script is bundled into the plugin from an antora-ls release, the one set by `antoraLsVersion` in `gradle.properties`; version 0.1.0 bundles antora-ls 0.2.2. The two projects are versioned independently, so a fix to the preview server reaches this plugin once `antoraLsVersion` is raised and the plugin is released.
+The script is bundled into the plugin from an antora-ls release, the one set by `antoraLsVersion` in `gradle.properties`; version 0.1.1 bundles antora-ls 0.2.4. The two projects are versioned independently, so a fix to the preview server reaches this plugin once `antoraLsVersion` is raised and the plugin is released.
 
 ## Install
 
